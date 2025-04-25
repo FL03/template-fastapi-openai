@@ -22,8 +22,9 @@ WORKDIR /app
 COPY pyproject.toml poetry.lock ./
 COPY bftp ./bftp
 
-RUN poetry install --without dev && \
-    poetry build  && \
+RUN --mount=type=cache,target=$POETRY_CACHE_DIR poetry install --without dev --no-root
+
+RUN poetry build  && \
     rm -rf $POETRY_CACHE_DIR
 
 FROM python:3.12-slim-buster as runtime
