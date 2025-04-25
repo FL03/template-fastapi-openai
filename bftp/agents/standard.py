@@ -13,7 +13,9 @@ class NeuralNetwork(nn.Module):
 
     def __init__(self, d_input=784, d_hidden=512, d_output=10):
         super().__init__()
+        # initialize a flatten layer
         self.flatten = nn.Flatten()
+        # setup a sequential, linear relu stack
         self.linear_relu_stack = nn.Sequential(
             nn.Linear(d_input, d_hidden),
             nn.ReLU(),
@@ -48,9 +50,8 @@ def train(dataloader, model, loss_fn, optimizer):
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
 
 
-def run_model():
+def run_model(dim_in = 28):
     print("Initializing the model...")
-    dim_in = 28
     model = NeuralNetwork(d_input=dim_in * dim_in).to(device)
     sample_data = torch.rand(1, dim_in, dim_in, device=device)
     logits = model(sample_data)
