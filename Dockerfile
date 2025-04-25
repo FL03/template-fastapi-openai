@@ -38,4 +38,7 @@ COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
 COPY bftp ./bftp
 
-ENTRYPOINT ["python", "-m", "bftp.main"]
+EXPOSE 80
+EXPOSE ${SERVER_PORT}
+
+CMD ["fastapi", "run", "bftp/app.py", "--host", "0.0.0.0", "--port", ${SERVER_PORT}]
