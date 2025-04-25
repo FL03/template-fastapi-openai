@@ -30,7 +30,7 @@
 **/.pytest_cache
 **/venv
 
-!Poetry.lock
+
 
 ## Rust
 **/target
@@ -106,9 +106,6 @@
 
 **/*.db
 
-**/*.lock
-**/*-lock.json
-
 **/*.log
 **/*.log.*
 
@@ -129,3 +126,5 @@
 
 #### Windows Subsystem for Linux (WSL)
 **/*:Zone.identifier
+
+!poetry.lock
