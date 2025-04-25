@@ -1,8 +1,8 @@
-name: Docker
+name: docker
 
 env:
   BASENAME: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
-  REGISTRY: hub.docker.com
+  REGISTRY: hub.docker.com # ghcr.io
   IMAGE_TAG: latest
 
 on:
@@ -22,9 +22,11 @@ jobs:
     - 
       name: Checkout
       uses: actions/checkout@v4
-    - name: Set up Docker Buildx
+    - 
+      name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
-    - name: Publish to Registry
+    - 
+      name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@v5
       with:
         context: .
