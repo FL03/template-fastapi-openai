@@ -1,23 +1,32 @@
-FROM python:latest AS base
+FROM python:3.12-buster AS base
+
+ENV POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=1 \
+    POETRY_VIRTUALENVS_CREATE=1 \
+    POETRY_CACHE_DIR=/tmp/poetry_cache
 
 RUN apt-get update -y && apt-get upgrade -y
 
-FROM base AS builder-base
+RUN pip install poetry
 
-RUN apt-get install -y curl
+FROM base AS builder
 
-RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python3 -
-ENV PATH="/opt/poetry/bin:$PATH"
+ENV POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=1 \
+    POETRY_VIRTUALENVS_CREATE=1 \
+    POETRY_CACHE_DIR=/tmp/poetry_cache
 
-FROM builder-base AS builder
+ADD . /app
+WORKDIR /app
 
-ADD . /workspace
-WORKDIR /workspace
+COPY pyproject.toml poetry.lock ./
+COPY bftp ./bftp
 
-COPY . .
-RUN poetry install --no-cache && poetry build
+RUN poetry install --without dev && \
+    poetry build  && \
+    rm -rf $POETRY_CACHE_DIR
 
-FROM builder AS runner
+FROM python:3.12-slim-buster as runtime
 
 ENV DATABASE_URL="sqlite://:memory:" \
     OPENAI_API_KEY="sk-..." \
@@ -25,7 +34,11 @@ ENV DATABASE_URL="sqlite://:memory:" \
     SECRET_TOKEN="some_token" \
     SERVER_PORT=8080
 
-EXPOSE 80
-EXPOSE ${SERVER_PORT}
+ENV PATH="/app/.venv/bin:$PATH" \
+    VIRTUAL_ENV=/app/.venv
 
-CMD ["poetry", "run", "python", "-m", "bftp"]
+COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
+
+COPY bftp ./bftp
+
+ENTRYPOINT ["python", "-m", "bftp.main"]
