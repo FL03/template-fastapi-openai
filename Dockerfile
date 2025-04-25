@@ -21,7 +21,7 @@ WORKDIR /app
 
 COPY . /app/
 
-RUN --mount=type=cache,target=$POETRY_CACHE_DIR poetry install --without dev --no-root
+RUN --mount=type=cache,target=$POETRY_CACHE_DIR poetry install --no-root
 
 RUN poetry build  && \
     rm -rf $POETRY_CACHE_DIR
