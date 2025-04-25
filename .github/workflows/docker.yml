@@ -6,7 +6,7 @@ concurrency:
 
 env:
   BASENAME: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
-  REGISTRY: ghcr.io #  hub.docker.com
+  REGISTRY: hub.docker.com # ghcr.io 
   IMAGE_TAG: latest
 
 on:
@@ -24,7 +24,8 @@ permissions: write-all
 jobs:
   application:
     env:
-      IMAGE: ${{ github.repository }}
+      # IMAGE: ${{ github.repository }}
+      IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
     runs-on: ubuntu-latest
     steps:
     - 
