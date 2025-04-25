@@ -41,4 +41,4 @@ COPY bftp ./bftp
 EXPOSE 80
 EXPOSE ${SERVER_PORT}
 
-ENTRYPOINT ["python", "-m", "fastapi", "run", "bftp/app.py", "--host", "0.0.0.0", "--port", ${SERVER_PORT}]
+ENTRYPOINT ["python", "-m", "fastapi", "run", "bftp", "--host", "0.0.0.0", "--port", ${SERVER_PORT}]
