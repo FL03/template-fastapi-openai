@@ -1,8 +1,3 @@
-"""
-    Appellation: session
-    Contrib: FL03 <jo3mccain@icloud.com>
-    Description: ... Summary ...
-"""
 
 from fastapi.security import OAuth2PasswordBearer
 from functools import lru_cache

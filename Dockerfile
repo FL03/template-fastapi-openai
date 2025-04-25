@@ -15,7 +15,7 @@ ADD . /workspace
 WORKDIR /workspace
 
 COPY . .
-RUN poetry install && poetry build
+RUN poetry install --no-cache && poetry build
 
 FROM builder AS runner
 
