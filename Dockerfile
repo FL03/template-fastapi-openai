@@ -27,7 +27,7 @@ RUN --mount=type=cache,target=$POETRY_CACHE_DIR poetry install --without dev --n
 RUN poetry build  && \
     rm -rf $POETRY_CACHE_DIR
 
-FROM python:3.12-slim-buster as runtime
+FROM python:3.12-slim-buster AS runtime
 
 ENV DATABASE_URL="sqlite://:memory:" \
     OPENAI_API_KEY="sk-..." \
