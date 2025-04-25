@@ -30,9 +30,6 @@ RUN poetry build  && \
 FROM python:3.12.10-slim AS runtime
 
 ENV DATABASE_URL="sqlite://:memory:" \
-    OPENAI_API_KEY="sk-..." \
-    OPENAI_API_BASE="https://api.openai.com/v1" \
-    SECRET_TOKEN="some_token" \
     SERVER_PORT=8080
 
 ENV PATH="/app/.venv/bin:$PATH" \

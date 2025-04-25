@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     domain: str = "http://localhost:8080"
     openai_api_key: str
     server: Server = Server(reload=dev_mode)
-    secret_token: str
+    secret_token: str = "some-token"
 
     class Config:
         env_file = ".env"
