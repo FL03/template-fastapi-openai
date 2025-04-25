@@ -6,6 +6,12 @@ from torch import nn
 device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else "cpu"
 print(f"Using device: {device}")
 
+# hyperparameters
+BATCH_SIZE = 64
+EPOCHS = 5
+LEARNING_RATE = 1e-3
+MOMENTUM = 0.9
+WEIGHT_DECAY = 1e-4
 
 # Define model
 class NeuralNetwork(nn.Module):
