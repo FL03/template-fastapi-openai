@@ -19,8 +19,7 @@ ENV POETRY_NO_INTERACTION=1 \
 ADD . /app
 WORKDIR /app
 
-COPY pyproject.toml poetry.lock ./
-COPY bftp ./bftp
+COPY . /app/
 
 RUN --mount=type=cache,target=$POETRY_CACHE_DIR poetry install --without dev --no-root
 
