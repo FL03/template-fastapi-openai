@@ -30,7 +30,7 @@
 **/.pytest_cache
 **/venv
 
-
+!Poetry.lock
 
 ## Rust
 **/target
