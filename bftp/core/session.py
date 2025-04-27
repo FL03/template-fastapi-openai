@@ -1,8 +1,10 @@
-
+from fastapi import FastAPI
 from fastapi.security import OAuth2PasswordBearer
 from functools import lru_cache
 from passlib.context import CryptContext
 from pydantic import BaseModel
+from tortoise import generate_config
+from tortoise.contrib.fastapi import RegisterTortoise
 
 from .settings import Settings, settings
 
@@ -40,7 +42,22 @@ class Session(BaseModel):
     settings: Settings = settings()
 
     def info(self):
-        return self.dict()
+        return self.model_dump()
+
+    async def register_orm(self, app: FastAPI, testing: bool = False):
+        config = generate_config(
+            self.settings.database_url,
+            app_modules={"models": ["bftp.data.models"]},
+            testing=testing,
+            connection_label="models",
+        )
+        return await RegisterTortoise(
+            app=app,
+            config=config,
+            add_exception_handlers=True,
+            generate_schemas=True,
+            _create_db=True,
+        )
 
 
 @lru_cache

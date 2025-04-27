@@ -1,3 +1,8 @@
+FROM scratch AS store 
+
+COPY data /data
+COPY bftp /bftp
+
 FROM python:3.12.10 AS base
 
 ENV POETRY_NO_INTERACTION=1 \

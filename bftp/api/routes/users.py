@@ -31,20 +31,20 @@ async def get_user(uid: int):
 
 
 @router.put(
-    "/user/{user_id}",
+    "/user/{uid}",
     response_model=User,
 )
-async def update_user(user_id: int, user = Depends(get_current_active_user)):
-    await Users.filter(id=user_id).update(**user.dict(exclude_unset=True))
-    return await User.from_queryset_single(Users.get(id=user_id))
+async def update_user(uid: int, user = Depends(get_current_active_user)):
+    await Users.filter(id=uid).update(**user.dict(exclude_unset=True))
+    return await User.from_queryset_single(Users.get(id=uid))
 
 
 @router.delete(
-    "/user/{user_id}",
+    "/user/{uid}",
     response_model=Status,
 )
-async def delete_user(user_id, usr = Depends(get_current_active_user)):
+async def delete_user(uid: str, usr = Depends(get_current_active_user)):
     deleted_count = await Users.filter(id=usr.id).delete()
     if not deleted_count:
-        raise HTTPException(status_code=404, detail=f"User {user_id} not found")
-    return Status(message=f"Deleted user {user_id}")
+        raise HTTPException(status_code=404, detail=f"User {uid} not found")
+    return Status(message=f"Deleted user {uid}")

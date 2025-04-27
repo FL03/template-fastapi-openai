@@ -12,6 +12,7 @@ version = "0.0.0"
 [tool.poetry.dependencies]
 python = "^3.12"
 
+bcrypt = "^4.3.0"
 fastapi = {extras = ["standard"], version = "^0.115.12"}
 matplotlib = "^3.10.1"
 openai = "^1.76.0"

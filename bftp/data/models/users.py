@@ -1,21 +1,27 @@
 from tortoise import fields
 from tortoise.models import Model
 from tortoise.contrib.pydantic import pydantic_model_creator
+from uuid import uuid4
 
 
 class Users(Model):
-    id = fields.IntField(pk=True)
+    id = fields.CharField(max_length=128, null = False, pk=True, unique=True)
+    email = fields.CharField(max_length=128, null=False, unique=True)
+    hashed_password = fields.CharField(max_length=256, null=False)
+
+    display_name = fields.CharField(max_length=128, null=True)
+    username = fields.CharField(max_length=128, null=True)
+    metadata = fields.JSONField(null=True)
+    is_active = fields.BooleanField(default=True)
+
     prefix_name = fields.CharField(max_length=128, null=True)
     first_name = fields.CharField(max_length=128, null=True)
     middle_name = fields.CharField(max_length=128, null=True)
     last_name = fields.CharField(max_length=128, null=True)
     suffix_name = fields.CharField(max_length=128, null=True)
-    ensname = fields.CharField(max_length=128, null=True)
-    hashed_password = fields.CharField(max_length=256, null=False)
-    username = fields.CharField(max_length=128, null=True)
 
-    created = fields.DatetimeField(auto_now_add=True)
-    modified = fields.DatetimeField(auto_now=True)
+    created_at = fields.DatetimeField(auto_now_add=True)
+    updated_at = fields.DatetimeField(auto_now=True)
 
     def full_name(self):
         return " ".join(
