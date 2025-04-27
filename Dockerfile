@@ -3,7 +3,7 @@ FROM scratch AS store
 COPY data /data
 COPY bftp /bftp
 
-FROM pytorch/conda-builder AS base
+FROM python:3.12.10 AS builder-base
 
 ENV POETRY_NO_INTERACTION=1 \
     POETRY_VIRTUALENVS_IN_PROJECT=1 \
@@ -14,7 +14,7 @@ RUN apt-get update -y && apt-get upgrade -y
 
 RUN pip install poetry
 
-FROM base AS builder
+FROM builder-base AS builder
 
 ENV POETRY_NO_INTERACTION=1 \
     POETRY_VIRTUALENVS_IN_PROJECT=1 \
