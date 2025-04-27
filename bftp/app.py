@@ -17,7 +17,6 @@ session: AppSession = appSession()
 settings: AppSettings = session.settings
 
 print("Loading the application...")
-print("current session: {}", session.info())
 
 
 @asynccontextmanager
