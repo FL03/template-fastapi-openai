@@ -3,7 +3,7 @@ FROM scratch AS store
 COPY data /data
 COPY bftp /bftp
 
-FROM python:3.12.10 AS base
+FROM pytorch AS base
 
 ENV POETRY_NO_INTERACTION=1 \
     POETRY_VIRTUALENVS_IN_PROJECT=1 \
