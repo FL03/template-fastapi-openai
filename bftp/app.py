@@ -1,4 +1,3 @@
-import os
 import tortoise
 import uvicorn
 
@@ -11,11 +10,14 @@ from fastapi.responses import RedirectResponse
 
 from tortoise.contrib.fastapi import tortoise_exception_handlers
 
-from bftp import core
+from bftp.core import AppSession, AppSettings, appSession
 from bftp.api import root
 
-session: core.Session = core.session()
-settings: core.Settings = session.settings
+session: AppSession = appSession()
+settings: AppSettings = session.settings
+
+print("Loading the application...")
+print("current session: {}", session.info())
 
 
 @asynccontextmanager

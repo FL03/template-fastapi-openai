@@ -33,7 +33,9 @@ RUN poetry build  && \
 
 FROM python:3.12.10-slim AS runtime
 
-ENV DATABASE_URL="sqlite://:memory:" \
+ENV APP_ENV=production \
+    APP_URL=http://localhost:8080 \
+    DATABASE_URL="sqlite://:memory:" \
     SERVER_PORT=8080
 
 ENV PATH="/app/.venv/bin:$PATH" \

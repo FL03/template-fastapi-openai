@@ -5,7 +5,7 @@ from uuid import uuid4
 
 
 class Users(Model):
-    id = fields.CharField(max_length=128, null = False, pk=True, unique=True)
+    id = fields.CharField(max_length=128, null = False, pk=True, unique=True, default=str(uuid4()))
     email = fields.CharField(max_length=128, null=True, unique=True)
     hashed_password = fields.CharField(max_length=256, null=False)
 
@@ -43,9 +43,11 @@ class Users(Model):
             ]
         )
 
-    class PydanticMeta:
+    class Meta:
         computed = ["full_name"]
         # exclude = ["hashed_password"]
+        # schema = "auth"
+        table = "users"
 
 
 User = pydantic_model_creator(Users, name="User")
