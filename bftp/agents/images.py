@@ -71,7 +71,7 @@ def train(dataloader, model, loss_fn, optimizer, batch_size=BATCH_SIZE):
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
 
 
-def run_model(dim_in = 28):
+def run_model(dim_in = 28, save_as = "model_weights.pth"):
     print("Initializing the model...")
     model = NeuralNetwork(d_input=dim_in * dim_in).to(device)
     sample_data = torch.rand(1, dim_in, dim_in, device=device)
@@ -81,6 +81,9 @@ def run_model(dim_in = 28):
     print(f"Predictions:\n{y_pred}")
 
     train(train_dataloader, model, nn.CrossEntropyLoss(), torch.optim.SGD(model.parameters(), lr=LEARNING_RATE, momentum=MOMENTUM, weight_decay=WEIGHT_DECAY))
+
+    # model = models.vgg16(weights="IMAGENET1K_V1")
+    torch.save(model.state_dict(), save_as)
 
 
 if __name__ == "__main__":
