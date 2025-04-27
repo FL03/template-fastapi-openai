@@ -3,7 +3,7 @@ FROM scratch AS store
 COPY data /data
 COPY bftp /bftp
 
-FROM pytorch:pytorch/conda-builder AS base
+FROM pytorch/conda-builder AS base
 
 ENV POETRY_NO_INTERACTION=1 \
     POETRY_VIRTUALENVS_IN_PROJECT=1 \
