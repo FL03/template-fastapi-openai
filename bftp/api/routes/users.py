@@ -14,10 +14,10 @@ async def get_users():
 
 
 @router.post("/user", response_model=User)
-async def create_user(username: str = Form(), password: str = Form()):
+async def create_user(username: str = Form(), password: str = Form(), email: str = Form()):
     hashed_password = auth.hash_password(password)
     user_obj = await Users.create(
-        **dict(username=username, hashed_password=hashed_password)
+        **dict(username=username, hashed_password=hashed_password, email=email)
     )
     return await User.from_tortoise_orm(user_obj)
 

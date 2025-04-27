@@ -77,5 +77,5 @@ async def homepage() -> RedirectResponse:
 app.include_router(root.api, prefix="/api", tags=["v1"])
 
 
-def run(host: str = "0.0.0.0", port=8080, reload=False):
+def run(host: str = "0.0.0.0", port=8080, reload=True):
     uvicorn.run("bftp.app:app", host=host, port=port, reload=reload)

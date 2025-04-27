@@ -6,7 +6,7 @@ from uuid import uuid4
 
 class Users(Model):
     id = fields.CharField(max_length=128, null = False, pk=True, unique=True)
-    email = fields.CharField(max_length=128, null=False, unique=True)
+    email = fields.CharField(max_length=128, null=True, unique=True)
     hashed_password = fields.CharField(max_length=256, null=False)
 
     display_name = fields.CharField(max_length=128, null=True)
@@ -22,6 +22,11 @@ class Users(Model):
 
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if not self.id:
+            self.id = str(uuid4())
 
     def full_name(self):
         return " ".join(
