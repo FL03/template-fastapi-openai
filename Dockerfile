@@ -3,7 +3,7 @@ FROM scratch AS store
 COPY data /data
 COPY bftp /bftp
 
-FROM python:3.12.10 AS builder-base
+FROM python:3.13.3 AS builder-base
 
 ENV POETRY_NO_INTERACTION=1 \
     POETRY_VIRTUALENVS_IN_PROJECT=1 \
@@ -31,7 +31,7 @@ RUN --mount=type=cache,target=$POETRY_CACHE_DIR poetry install --no-root
 RUN poetry build  && \
     rm -rf $POETRY_CACHE_DIR
 
-FROM python:3.12.10-slim AS runtime
+FROM python:3.13.3-slim AS runtime
 
 ENV APP_ENV=production \
     APP_URL=http://localhost:8080 \
