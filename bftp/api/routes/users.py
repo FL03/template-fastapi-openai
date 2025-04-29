@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Depends, Form, HTTPException
 from typing import List
 
-from bftp.api.routes.auth import get_current_active_user, auth
+from bftp.api.routes.auth import get_current_active_user
+from bftp.core.session import appSession
 from bftp.data.messages import Status
 from bftp.data.models import User, Users
 
 router = APIRouter(prefix="/users", tags=["users"])
-
+session = appSession()
 
 @router.get("/", response_model=List[User])
 async def get_users():
@@ -14,10 +15,12 @@ async def get_users():
 
 
 @router.post("/user", response_model=User)
-async def create_user(username: str = Form(), password: str = Form()):
-    hashed_password = auth.hash_password(password)
+async def create_user(
+    username: str = Form(), password: str = Form(), email: str = Form()
+):
+    hashed_password = session.auth.hash_password(password)
     user_obj = await Users.create(
-        **dict(username=username, hashed_password=hashed_password)
+        **dict(username=username, hashed_password=hashed_password, email=email)
     )
     return await User.from_tortoise_orm(user_obj)
 
@@ -31,20 +34,20 @@ async def get_user(uid: int):
 
 
 @router.put(
-    "/user/{user_id}",
+    "/user/{uid}",
     response_model=User,
 )
-async def update_user(user_id: int, user = Depends(get_current_active_user)):
-    await Users.filter(id=user_id).update(**user.dict(exclude_unset=True))
-    return await User.from_queryset_single(Users.get(id=user_id))
+async def update_user(uid: int, user=Depends(get_current_active_user)):
+    await Users.filter(id=uid).update(**user.dict(exclude_unset=True))
+    return await User.from_queryset_single(Users.get(id=uid))
 
 
 @router.delete(
-    "/user/{user_id}",
+    "/user/{uid}",
     response_model=Status,
 )
-async def delete_user(user_id, usr = Depends(get_current_active_user)):
+async def delete_user(uid: str, usr=Depends(get_current_active_user)):
     deleted_count = await Users.filter(id=usr.id).delete()
     if not deleted_count:
-        raise HTTPException(status_code=404, detail=f"User {user_id} not found")
-    return Status(message=f"Deleted user {user_id}")
+        raise HTTPException(status_code=404, detail=f"User {uid} not found")
+    return Status(message=f"Deleted user {uid}")

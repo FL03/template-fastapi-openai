@@ -1,4 +1,9 @@
-FROM python:3.12.10 AS base
+FROM scratch AS store 
+
+COPY data /data
+COPY bftp /bftp
+
+FROM python:3.12.10 AS builder-base
 
 ENV POETRY_NO_INTERACTION=1 \
     POETRY_VIRTUALENVS_IN_PROJECT=1 \
@@ -9,7 +14,7 @@ RUN apt-get update -y && apt-get upgrade -y
 
 RUN pip install poetry
 
-FROM base AS builder
+FROM builder-base AS builder
 
 ENV POETRY_NO_INTERACTION=1 \
     POETRY_VIRTUALENVS_IN_PROJECT=1 \
@@ -28,7 +33,9 @@ RUN poetry build  && \
 
 FROM python:3.12.10-slim AS runtime
 
-ENV DATABASE_URL="sqlite://:memory:" \
+ENV APP_ENV=production \
+    APP_URL=http://localhost:8080 \
+    DATABASE_URL="sqlite://:memory:" \
     SERVER_PORT=8080
 
 ENV PATH="/app/.venv/bin:$PATH" \
@@ -41,4 +48,4 @@ COPY bftp ./bftp
 EXPOSE 80
 EXPOSE ${SERVER_PORT}
 
-CMD ["fastapi", "run", "bftp/app.py", "--host", "0.0.0.0", "--port", ${SERVER_PORT}]
+ENTRYPOINT ["python", "-m", "bftp"]

@@ -1,4 +1,3 @@
-import os
 import tortoise
 import uvicorn
 
@@ -9,32 +8,20 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 
-from tortoise.contrib.fastapi import (
-    RegisterTortoise,
-    tortoise_exception_handlers,
-)
+from tortoise.contrib.fastapi import tortoise_exception_handlers
 
-from bftp import core
-from bftp.api.root import v1
+from bftp.core import AppSession, AppSettings, appSession
+from bftp.api import root
 
-session: core.Session = core.session()
-settings: core.Settings = session.settings
+session: AppSession = appSession()
+settings: AppSettings = session.settings
+
+print("Loading the application...")
 
 
 @asynccontextmanager
 async def lifespan_test(app: FastAPI) -> AsyncGenerator[None, None]:
-    config = tortoise.generate_config(
-        os.getenv("DATABASE_URL", "sqlite://:memory:"),
-        app_modules={"models": ["bftp.data.models"]},
-        testing=True,
-        connection_label="models",
-    )
-    async with RegisterTortoise(
-        app=app,
-        config=config,
-        generate_schemas=True,
-        _create_db=True,
-    ):
+    async with await session.register_orm(app, testing=True) as _:
         # db connected
         yield
         # app teardown
@@ -42,38 +29,21 @@ async def lifespan_test(app: FastAPI) -> AsyncGenerator[None, None]:
     tortoise.Tortoise._drop_databases()
 
 
+# lifespan is a context manager that handles the startup and shutdown of the application
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     if getattr(app.state, "testing", None):
         async with lifespan_test(app) as _:
             yield
     else:
-        config = tortoise.generate_config(
-            settings.database_url,
-            app_modules={"models": ["bftp.data.models"]},
-            testing=False,
-            connection_label="models",
-        )
-        async with RegisterTortoise(
-            app=app,
-            config=config,
-            add_exception_handlers=True,
-            generate_schemas=True,
-            _create_db=True,
-        ):
+        async with await session.register_orm(app, testing=False) as _:
             yield
             # app teardown
         # db connections closed
         await tortoise.Tortoise._drop_databases()
 
 
-app: FastAPI = FastAPI(
-    title="Restful", exception_handlers=tortoise_exception_handlers(), lifespan=lifespan
-)
-
-app.include_router(v1)
-
-
+# handle startup procedures
 @lifespan("startup")
 async def startup():
     print("Starting the application...")
@@ -81,16 +51,31 @@ async def startup():
     print("View the server locally at http://localhost:{}".format(settings.server.port))
 
 
-@app.get("/")
-async def homepage() -> RedirectResponse:
-    return RedirectResponse("/docs")
-
-
+# handle shutdown procudures
 @lifespan("shutdown")
 async def shutdown():
     # Perform any cleanup tasks here
     tortoise.Tortoise.close_connections()
     print("Terminating the application...")
+
+
+# create the FastAPI app instance
+app: FastAPI = FastAPI(
+    exception_handlers=tortoise_exception_handlers(),
+    lifespan=lifespan,
+    description="A RESTful API built with FastAPI and Tortoise ORM.",
+    title="BFTP",
+)
+
+
+# create a temporary directory root of the application
+@app.get("/")
+async def homepage() -> RedirectResponse:
+    return RedirectResponse("/docs")
+
+
+# include the base router
+app.include_router(root.api, prefix="/api", tags=["v1"])
 
 
 def run(host: str = "0.0.0.0", port=8080, reload=True):
