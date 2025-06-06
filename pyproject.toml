@@ -21,7 +21,7 @@ pydantic-settings = "^2.9.1"
 python-jose = "^3.4.0"
 torch = "^2.7.0"
 torchvision = "^0.22.0"
-tortoise-orm = "^0.25.0"
+tortoise-orm = "^0.25.1"
 uvicorn = "^0.34.2"
 
 [build-system]
